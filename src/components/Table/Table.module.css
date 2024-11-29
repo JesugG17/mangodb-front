@@ -1,0 +1,58 @@
+.gridjs {
+  border: 1px solid #000;
+  padding: 10px 0 10px 20px;
+  background-color: #d5d5d5;
+}
+.gridjs * {
+  margin: 0;
+  padding: 0;
+}
+.gridjs table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.gridjs input {
+  padding: 5px;
+  font-size: 16px;
+  width: 34.5%;
+  border: none;
+  margin: 10px 0;
+}
+.gridjs tr th {
+  padding: 10px;
+  font-size: 20px;
+  color: white;
+  background-color: #8a8686;
+  border: 2px solid #000;
+}
+.gridjs tr th:last-child,
+.gridjs tr td:last-child {
+  background-color: #d5d5d5;
+  padding: 0;
+  border: none;
+}
+.gridjs tr td:last-child button {
+  border: none;
+  font-size: 22px;
+  background-color: #0000;
+}
+.gridjs tr th button {
+  display: none;
+}
+.gridjs tr:nth-child(even) {
+  background-color: white;
+}
+.gridjs tr:nth-child(odd) {
+  background-color: rgb(229, 243, 248);
+}
+.gridjs tr td {
+  padding: 7px 3px;
+  border: 2px solid #000;
+}
+.gridjs button {
+  border: none;
+  padding: 5px;
+}
+.gridjs tr:hover {
+  background-color: #d3d3d3;
+}

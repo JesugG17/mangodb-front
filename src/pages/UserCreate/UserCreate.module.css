@@ -1,0 +1,18 @@
+.divs > * {
+  margin: 15px 0;
+  width: 100%;
+  font-size: 16px;
+  padding: 4px;
+}
+.divs {
+  width: 80%;
+}
+.form {
+  width: 100%;
+  place-items: center;
+}
+.button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+}
