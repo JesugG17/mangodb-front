@@ -109,7 +109,7 @@ export const ModalCrearHectarea: FC<Props> = ({ isVisible, onOpenChange, onCreat
           {
             isLoading
             ? 'Cargando...'
-            : 'Registrar Caja'
+            : 'Registrar Hectarea'
           }
         </Button>
       </DialogContent>

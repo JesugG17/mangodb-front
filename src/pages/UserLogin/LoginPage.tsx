@@ -135,7 +135,7 @@ export const LoginPage = () => {
           </CardContent>
           <CardFooter>
             <Button className='w-full' type='submit' disabled={isLoading}>
-              {isLoading ? 'Cargando...' : 'Login'}
+              {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
             </Button>
           </CardFooter>
         </form>

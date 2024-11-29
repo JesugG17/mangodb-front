@@ -48,7 +48,7 @@ export interface CajaResponse {
 
 export interface Data {
   kg:     number;
-  Planta: Planta;
+  planta: Planta;
   fecha:  Date;
   tipo:   string;
   idCaja: number;

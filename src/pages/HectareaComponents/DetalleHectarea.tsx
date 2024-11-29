@@ -68,7 +68,7 @@ export const DetalleHectarea = () => {
         idCaja: data.idCaja,
         hectarea: +id!,
         kg: data.kg,
-        planta: data.Planta.idPlanta,
+        planta: data.planta.idPlanta,
         fecha: data.fecha,
         tipo: data.tipo,
       });
