@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { httpClient } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@radix-ui/react-toast';
 
 export const ModalCrearHectarea: FC<Props> = ({ isVisible, onOpenChange, onCreate }) => {
   const [formState, setFormState] = useState({
@@ -33,6 +34,15 @@ export const ModalCrearHectarea: FC<Props> = ({ isVisible, onOpenChange, onCreat
       ...formState,
       idHectarea: +formState.idHectarea
     };
+    
+    if(newHectarea.idHectarea === 0 || newHectarea.comunidad === '' || newHectarea.ubicacion === '') {
+      return toast({
+        title: 'ERROR',
+        description: 'Todos los campos son requeridos',
+        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>
+      });
+    }
+
     setIsLoading(true);
     const { data } = await httpClient.post('/hectareas/create', newHectarea);
     setIsLoading(false);
@@ -68,12 +78,20 @@ export const ModalCrearHectarea: FC<Props> = ({ isVisible, onOpenChange, onCreat
               ID de hectárea
             </Label>
             <Input
-              type='number'
+              type='text'
               id='idHectarea'
               name='idHectarea'
               value={formState.idHectarea}
-              onChange={handleChange}
               className='col-span-3'
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*$/.test(value)) {
+                    setFormState(prevState => ({
+                      ...prevState,
+                      idHectarea: Number(value)
+                    }));
+                }
+              }}
             />
           </div>
           <div className='grid grid-cols-4 items-center gap-4'>
