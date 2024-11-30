@@ -18,8 +18,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Spinner } from '@/components/Spinner';
 
 interface EntradaCaja {
-  id: number;
-  espacio: '';
+  idCaja: number;
+  estante: number;
+  division: number;
+  particion: number;
   fechaRegistro: string;
 }
 
@@ -35,42 +37,53 @@ export interface Almacen {
 }
 
 export const AlmacenOptions = () => {
-  const [cajaEntrada, setCajaEntrada] = useState<EntradaCaja>({
-    id: 0,
-    espacio: '',
-    fechaRegistro: new Date().toISOString().split('T')[0],
+  const [formState, setFormState] = useState({
+    idCaja: ''
   });
+  const [cajaEntrada, setCajaEntrada] = useState<EntradaCaja>({} as EntradaCaja);
   const [estantes, setEstantes] = useState<Estante[]>([])
   const [almacen, setAlmacen] = useState<Almacen>({} as Almacen)
   const { id } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [isEstanteLoading, setIsEstanteLoading] = useState(false);
 
-  const handleRegistrarCaja = () => {
-    console.log('Caja registrada:', cajaEntrada);
-    setCajaEntrada({
-      id: 0,
-      espacio: '',
-      fechaRegistro: new Date().toISOString().split('T')[0],
+  const handleAsignarEspacio = async() => {
+    const { data } = await httpClient.post('/almacenes/asignar-espacio', {
+      idCaja: formState.idCaja,
+      idAlmacen: almacen.id
     });
-  };
+
+    if (!data.isValid) {
+      return toast({
+        title: 'HA OCURRIDO UN ERROR',
+        description: data.message
+      });
+    }
+    setCajaEntrada({ ...data.data });
+    await fetchAlmacen();
+  }
+
+  const fetchAlmacen = async() => {
+    setIsEstanteLoading(true)
+    const { data } = await httpClient.get(`/almacenes/${id}`);
+
+    if (!data.isValid) {
+      navigate('/dashboard/almacen');
+      return toast({
+        title: 'HA OCURRIDO UN ERROR',
+        description: data.message
+      });
+    }
+
+    setAlmacen(data.data.almacen);
+    setEstantes(data.data.estantes);
+    setIsEstanteLoading(false);
+  }
 
   useEffect(() => {
-    httpClient.get(`/almacenes/${id}`)
-    .then(resp => {
-      if (!resp.data.isValid) {
-        navigate('/dashboard/almacen');
-        return toast({
-          title: 'HA OCURRIDO UN ERROR',
-          description: resp.data.message
-        });
-      }
-
-      setAlmacen(resp.data.data.almacen);
-      setEstantes(resp.data.data.estantes);
-    })
-    .finally(() => setIsLoading(false));
+    fetchAlmacen().finally(() => setIsLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
@@ -80,6 +93,8 @@ export const AlmacenOptions = () => {
       </div>
     );
   }
+
+  const almacenLleno = estantes.every(estante => estante.lleno);
 
   return (
     <div className='w-full h-[93%]'>
@@ -92,13 +107,13 @@ export const AlmacenOptions = () => {
           <div className='w-full h-9 flex gap-5 items-center justify-between text-black'>
             <div className='flex items-center'>
               <span>ID:</span>
-              <input type='text' placeholder={almacen.id + ''} disabled className='w-40 h-9 ml-3' />
+              <input type='text' placeholder={almacen.id + ''} disabled className='w-40 h-9 ml-3 p-2' />
               <span>Tipo:</span>
-              <input type='text' placeholder={almacen.tipo} disabled className='w-40 h-9 ml-3' />
+              <input type='text' placeholder={almacen.tipo} disabled className='w-40 h-9 ml-3 p-2' />
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'>
+                <Button disabled={almacenLleno} className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'>
                   <Box className='mr-2 h-4 w-4' />
                   Entrada de Caja
                 </Button>
@@ -114,33 +129,45 @@ export const AlmacenOptions = () => {
                     </Label>
                     <Input
                       id='kilos'
-                      type='text'
-                      value={cajaEntrada.id}
+                      type='number'
+                      value={formState.idCaja}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (/^\d*$/.test(value)) {
-                          setCajaEntrada({ ...cajaEntrada, id: Number(value) });
+                          setFormState({
+                            idCaja: value
+                          });
                         }
                       }}
                       className='col-span-3'
                     />
                   </div>
                 </div>
-                <Button className=' bg-[#98a75f] hover:bg-[#7a8a3b] text-white'>
-                  Asignar Partición
+                <Button
+                  onClick={handleAsignarEspacio}
+                  disabled={isEstanteLoading}
+                  className=' bg-[#98a75f] hover:bg-[#7a8a3b] text-white'
+                >
+                  {isEstanteLoading ? 'Cargando...' : 'Asignar Espacio'}
                 </Button>
-                <div className='mt-4 p-4 bg-gray-100 rounded-md' onClick={handleRegistrarCaja}>
+                <div className='mt-4 p-4 bg-gray-100 rounded-md'>
                   <h3 className='font-bold mb-2'>Etiqueta:</h3>
-                  <p>Caja: [ID de la Caja]</p>
-                  <p>Fecha de registro: {cajaEntrada.fechaRegistro}</p>
-                  <p>Partición Asignada: {cajaEntrada.espacio}</p>
+                  <p><strong>Caja:</strong> {cajaEntrada.idCaja || 'No asignado'}</p>
+                  <p><strong>Estante:</strong> {cajaEntrada.estante || 'No asignado'}</p>
+                  <p><strong>Division:</strong> {cajaEntrada.division || 'No asignado'}</p>
+                  <p><strong>Particion:</strong> {cajaEntrada.particion || 'No asignado'}</p>
+                  <p><strong>Fecha de registro:</strong> {cajaEntrada.fechaRegistro ? cajaEntrada.fechaRegistro.split('T')[0] : 'No asignado'}</p>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
         </div>
         <div className='mt-10 flex justify-center'>
-          <EstantesPage estantes={estantes} almacen={almacen} />
+          {
+            isEstanteLoading
+            ? 'Cargando...'
+            : <EstantesPage estantes={estantes} almacen={almacen} />
+          }
         </div>
       </div>
     </div>

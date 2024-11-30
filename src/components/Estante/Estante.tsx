@@ -11,10 +11,11 @@ import {
 import { Package } from 'lucide-react';
 import { Almacen, Estante as IEstante } from '@/pages/Almacen/AlmacenOptions';
 import { httpClient } from '@/lib/api';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface Particion {
   particion: number;
-  caja: unknown;
+  caja: number | null;
 }
 
 interface Division {
@@ -90,7 +91,16 @@ export const Estante: React.FC<Props> = ({ estante, almacen }) => {
                             <div key={particion}>
                               {
                                 caja 
-                                ? <Package size={20} />
+                                ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Package size={20} />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <strong>{caja}</strong>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )
                                 : <div className='w-5 h-5 border rounded' />
                               }
                             </div>
@@ -101,24 +111,6 @@ export const Estante: React.FC<Props> = ({ estante, almacen }) => {
                   </TableRow>
                 ))
               }
-              {/* {ocupacion.map((division, divIndex) => (
-                <TableRow key={divIndex}>
-                  <TableCell>{divIndex + 1}</TableCell>
-                  <TableCell>
-                    <div className='flex space-x-2'>
-                      {division.map((ocupada, partIndex) => (
-                        <div key={partIndex}>
-                          {ocupada ? (
-                            <Package size={20} />
-                          ) : (
-                            <div className='w-5 h-5 border rounded' />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))} */}
             </TableBody>
           </Table>
         </DialogContent>
