@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { useNavigate, useParams } from 'react-router-dom';
 import { httpClient } from '@/lib/api';
-import { CajaResponse, DataHectarea, HectareaResponse } from '@/types';
+import { CajaResponse, DataHectarea, HectareaResponse, SensorResponse } from '@/types';
 import { Input } from '@/components/ui/input';
 
 interface CajaRegistro {
@@ -116,16 +116,36 @@ export const DetalleHectarea = () => {
     handleRegistrarCaja(res.data);
   }
 
-  const asignarSensorProducto = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-producto', {
-      plantaId
+  const mensajeSensor = (data: SensorResponse) => {
+
+    if(!data.isValid){
+      toast({
+        title: 'ERROR AL ASIGNAR SENSOR',
+        description: data.message,
+        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>
+      });
+      return;
+    }
+
+    toast({
+      title: 'SENSOR ASIGNADO CON ÉXITO',
+      description: data.message,
+      action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>
     });
   }
 
-  const asignarSensorCrecimiento = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-crecimiento', {
+  const asignarSensorProducto = async (plantaId: number) => {
+    const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-producto', {
       plantaId
     });
+    mensajeSensor(res.data);
+  }
+
+  const asignarSensorCrecimiento = async (plantaId: number) => {
+    const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-crecimiento', {
+      plantaId
+    });
+    mensajeSensor(res.data);
   }
 
   useEffect(() => {

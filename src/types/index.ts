@@ -54,3 +54,8 @@ export interface Data {
   idCaja: number;
 }
 
+export interface SensorResponse {
+  isValid: boolean;
+  data:    Data;
+  message: string;
+}
