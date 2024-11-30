@@ -34,6 +34,8 @@ export interface DataHectarea {
 export interface Planta {
   idPlanta: number;
   status:   Status;
+  aptaSensorCrecimiento: boolean;
+  aptaSensorProducto: boolean;
 }
 
 export enum Status {

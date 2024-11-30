@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Sprout, Box, ArrowBigLeftDash } from 'lucide-react';
 import { FirstLetterGreen } from '@/components/FirstLetterGreen/FirstLetterGreen';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
 import {
@@ -24,6 +23,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { httpClient } from '@/lib/api';
 import { CajaResponse, DataHectarea, HectareaResponse } from '@/types';
 import { Input } from '@/components/ui/input';
+import { PlantaCard } from './PlantaCard';
 
 interface CajaRegistro {
   planta: number;
@@ -51,17 +51,17 @@ export const DetalleHectarea = () => {
     kg: 0,
     planta: 0,
     fecha: new Date(),
-    tipo: 'CALIDAD'
+    tipo: 'CALIDAD',
   });
   const [hectarea, setHectarea] = useState<DataHectarea>();
   const [cajaRegistro, setCajaRegistro] = useState<CajaRegistro>({
     kg: 0,
     planta: 0,
-    tipo: 'CALIDAD'
+    tipo: 'CALIDAD',
   });
 
   const handleRegistrarCaja = (res: CajaResponse) => {
-  const { data } = res;
+    const { data } = res;
 
     if (res.isValid) {
       setCajaRegistrada({
@@ -78,7 +78,7 @@ export const DetalleHectarea = () => {
         planta: 0,
         tipo: 'CALIDAD',
       });
-    
+
       toast({
         title: 'CAJA REGISTRADA CON ÉXITO',
         description: 'La caja ha sido registrada correctamente',
@@ -94,14 +94,13 @@ export const DetalleHectarea = () => {
       });
     }
   };
-  
-  const registrarCaja = async () => {
 
-    if(cajaRegistro.planta === 0 || cajaRegistro.kg === 0) {
+  const registrarCaja = async () => {
+    if (cajaRegistro.planta === 0 || cajaRegistro.kg === 0) {
       toast({
         title: 'ERROR AL REGISTRAR CAJA',
         description: 'Debe colocar cantidades correctas',
-        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>
+        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
       });
       return;
     }
@@ -109,67 +108,59 @@ export const DetalleHectarea = () => {
     const userForCreate = {
       planta: cajaRegistro.planta,
       kg: cajaRegistro.kg,
-      tipo: cajaRegistro.tipo
-    }
+      tipo: cajaRegistro.tipo,
+    };
 
     const res = await httpClient.post('/cajas/create', userForCreate);
     handleRegistrarCaja(res.data);
-  }
-
-  const asignarSensorProducto = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-producto', {
-      plantaId
-    });
-  }
-
-  const asignarSensorCrecimiento = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-crecimiento', {
-      plantaId
-    });
-  }
+  };
 
   useEffect(() => {
-    httpClient.get<HectareaResponse>(`/hectareas/by-id/${id}`)
-      .then((res) => {
-        if (!res.data.isValid) {
-          toast({
-            title: 'ERROR AL CARGAR HECTÁREA',
-            description: res.data.message,
-            action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
-          });
-          navigate('/dashboard/hectarea');
-        }
+    httpClient.get<HectareaResponse>(`/hectareas/by-id/${id}`).then((res) => {
+      if (!res.data.isValid) {
+        toast({
+          title: 'ERROR AL CARGAR HECTÁREA',
+          description: res.data.message,
+          action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+        });
+        navigate('/dashboard/hectarea');
+      }
 
-        setHectarea(res.data.data)
-      })
-  }, [])
+      setHectarea(res.data.data);
+    });
+  }, []);
 
   return (
     <div className='w-full h-[93%]'>
       <div className='flex p-2 items-center justify-between'>
         <div className='flex p-3 items-center'>
-          <ArrowBigLeftDash size={40} className='cursor-pointer' color='#98a75f' onClick={() => navigate('/dashboard/hectarea')} />
+          <ArrowBigLeftDash
+            size={40}
+            className='cursor-pointer'
+            color='#98a75f'
+            onClick={() => navigate('/dashboard/hectarea')}
+          />
           <div className='flex items-center ml-5'>
             <Sprout size={40} color='#98a75f' />
             <FirstLetterGreen label='Detalle de Hectárea' style={{ fontSize: 35 }} />
           </div>
         </div>
-        <Dialog onOpenChange={(open) => {
-          if (!open) {
-            setCajaRegistrada({
-              idCaja: 0,
-              hectarea: 0,
-              kg: 0,
-              planta: 0,
-              fecha: new Date(),
-              tipo: 'CALIDAD',
-            });
-          }
-        }}>
+        <Dialog
+          onOpenChange={(open) => {
+            if (!open) {
+              setCajaRegistrada({
+                idCaja: 0,
+                hectarea: 0,
+                kg: 0,
+                planta: 0,
+                fecha: new Date(),
+                tipo: 'CALIDAD',
+              });
+            }
+          }}
+        >
           <DialogTrigger asChild>
-            <Button 
-              className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'
-            >
+            <Button className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'>
               <Box className='mr-2 h-4 w-4' />
               Registrar Caja
             </Button>
@@ -184,16 +175,16 @@ export const DetalleHectarea = () => {
                   Planta
                 </Label>
                 <Input
-                  id="planta"
-                  type="text"
+                  id='planta'
+                  type='text'
                   value={cajaRegistro.planta}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
-                        setCajaRegistro({ ...cajaRegistro, planta: Number(value) });
+                      setCajaRegistro({ ...cajaRegistro, planta: Number(value) });
                     }
                   }}
-                  className="col-span-3"
+                  className='col-span-3'
                 />
               </div>
               <div className='flex grid-cols-4 items-center gap-9'>
@@ -201,16 +192,16 @@ export const DetalleHectarea = () => {
                   Kilos
                 </Label>
                 <Input
-                  id="kilos"
-                  type="text"
+                  id='kilos'
+                  type='text'
                   value={cajaRegistro.kg}
                   onChange={(e) => {
                     const value = e.target.value;
                     if (/^\d*$/.test(value)) {
-                        setCajaRegistro({ ...cajaRegistro, kg: Number(value) });
+                      setCajaRegistro({ ...cajaRegistro, kg: Number(value) });
                     }
-                }}
-                  className="col-span-3"
+                  }}
+                  className='col-span-3'
                 />
               </div>
               <div className='flex grid-cols-4 items-center gap-5'>
@@ -253,24 +244,7 @@ export const DetalleHectarea = () => {
       <div className='flex flex-col p-[30px] bg-[#fcfcfc] w-full h-[98%] rounded shadow-lg'>
         <div className='grid grid-cols-5 gap-4'>
           {hectarea?.plantas.map((planta) => (
-            <Card key={planta.idPlanta} className='p-4'>
-              <CardContent className='flex flex-col items-center'>
-                <Sprout size={40} color='#98a75f' className='mb-4' />
-                <span>{planta.idPlanta}</span>
-                <Button
-                  onClick={() => asignarSensorCrecimiento(planta.idPlanta)}
-                  className='w-full mb-2 bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
-                >
-                  Sensor Crecimiento
-                </Button>
-                <Button
-                  onClick={() => asignarSensorProducto(planta.idPlanta)}
-                  className='w-full bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
-                >
-                  Sensor Producto
-                </Button>
-              </CardContent>
-            </Card>
+            <PlantaCard key={planta.idPlanta} planta={planta} />
           ))}
         </div>
       </div>
