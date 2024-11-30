@@ -113,7 +113,7 @@ export const DetalleHectarea = () => {
 
     const res = await httpClient.post('/cajas/create', userForCreate);
     handleRegistrarCaja(res.data);
-  };
+  }
 
   useEffect(() => {
     httpClient.get<HectareaResponse>(`/hectareas/by-id/${id}`).then((res) => {

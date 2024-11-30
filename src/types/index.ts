@@ -36,6 +36,23 @@ export interface Planta {
   status:   Status;
   aptaSensorCrecimiento: boolean;
   aptaSensorProducto: boolean;
+  sensorCrecimiento: SensorCrecimiento;
+  sensorProducto: SensorProducto;
+}
+
+export interface SensorCrecimiento {
+  id: number;
+  altura: number;
+  grosorTallo: number;
+  presenciaPlagas: number;
+  humedad: number;
+}
+
+export interface SensorProducto {
+  id: number;
+  porcentajeColor: number;
+  porcentajeTexture: number;
+  oxigenacion: number;
 }
 
 export enum Status {
@@ -56,3 +73,8 @@ export interface Data {
   idCaja: number;
 }
 
+export interface SensorResponse {
+  isValid: boolean;
+  data:    Data;
+  message: string;
+}

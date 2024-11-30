@@ -1,27 +1,49 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ToastAction } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
 import { httpClient } from '@/lib/api';
-import { Planta } from '@/types';
+import { Planta, SensorResponse } from '@/types';
 import { Sprout } from 'lucide-react';
 import { FC, useState } from 'react';
 
 export const PlantaCard: FC<Props> = ({ planta }) => {
   const [popOverCrecimiento, setPopOverCrecimiento] = useState(false);
   const [popOverProducto, setPopOverProducto] = useState(false);
+  const { toast } = useToast();
+
+  const mensajeSensor = (data: SensorResponse) => {
+    if (!data.isValid) {
+      toast({
+        title: 'ERROR AL ASIGNAR SENSOR',
+        description: data.message,
+        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+      });
+      return;
+    }
+
+    toast({
+      title: 'SENSOR ASIGNADO CON ÉXITO',
+      description: data.message,
+      action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+    });
+  };
 
   const asignarSensorProducto = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-producto', {
+    const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-producto', {
       plantaId,
     });
+    mensajeSensor(res.data);
   };
 
   const asignarSensorCrecimiento = async (plantaId: number) => {
-    await httpClient.post('/plantas/asignar-sensor-crecimiento', {
+    const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-crecimiento', {
       plantaId,
     });
+    mensajeSensor(res.data);
   };
-  
+
   return (
     <Card className='p-4'>
       <CardContent className='flex flex-col items-center'>
@@ -31,9 +53,8 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
           <Popover open={popOverCrecimiento}>
             <PopoverTrigger asChild>
               <Button
-                onMouseEnter={() => setPopOverCrecimiento(true)}
-                onMouseLeave={() => setPopOverCrecimiento(false)}
-                // disabled
+                onMouseOver={() => setPopOverCrecimiento(true)}
+                onMouseOut={() => setPopOverCrecimiento(false)}
                 className='w-full cursor-default opacity-50 mb-2 bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
               >
                 Sensor Crecimiento
@@ -48,21 +69,40 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
         ) : (
           <Button
             onClick={() => asignarSensorCrecimiento(planta.idPlanta)}
-            className='w-full mb-2 bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
+            className={`w-full mb-2 ${planta.sensorCrecimiento ? 'bg-green-500' : 'bg-red-400'} text-white`}
           >
             Sensor Crecimiento
           </Button>
         )}
-        <Button
-          disabled={!planta.aptaSensorProducto}
-          onClick={() => asignarSensorProducto(planta.idPlanta)}
-          className='w-full bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
-        >
-          Sensor Producto
-        </Button>
+
+        {!planta.aptaSensorProducto ? (
+          <Popover open={popOverProducto}>
+            <PopoverTrigger asChild>
+              <Button
+                onMouseOver={() => setPopOverProducto(true)}
+                onMouseOut={() => setPopOverProducto(false)}
+                className='w-full cursor-default opacity-50 mb-2 bg-[#c7c7c7] hover:bg-[#cccccc] text-[#3B3B3B]'
+              >
+                Sensor Producto
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className='bg-white rounded p-2'>
+                <strong>Esta planta no es apta para colocar sensor de producto</strong>
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button
+            onClick={() => asignarSensorProducto(planta.idPlanta)}
+            className={`w-full mb-2 ${planta.sensorProducto ? 'bg-green-500' : 'bg-red-400'} text-white`}
+          >
+            Sensor Producto
+          </Button>
+        )}
       </CardContent>
     </Card>
-  )
+  );
 };
 
 type Props = {
