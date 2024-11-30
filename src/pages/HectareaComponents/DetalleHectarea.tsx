@@ -192,7 +192,7 @@ export const DetalleHectarea = () => {
                     if (/^\d*$/.test(value)) {
                         setCajaRegistro({ ...cajaRegistro, planta: Number(value) });
                     }
-                }}
+                  }}
                   className="col-span-3"
                 />
               </div>
