@@ -1,28 +1,34 @@
 import { FC, PropsWithChildren, useState } from 'react';
 import { AuthContext } from './AuthContex';
 
+export interface User {
+  userName: string;
+  role: string
+}
+
 export const AuthProvider: FC<Props> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const auth = JSON.parse(localStorage.getItem('auth') || '{}');
     const isAuthenticated = auth.token !== undefined;
     return isAuthenticated;
   });
-  const [userName, setUserName] = useState(() => {
+  const [user, setUser] = useState(() => {
     const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-    const userName = auth.userName || '';
-    return userName;
+    const user = auth.user || {};
+    return user;
   });
 
-  const setAuth = ({ isAuthenticated, name }: { isAuthenticated: boolean; name: string }) => {
+
+  const setAuth = ({ isAuthenticated, user }: { isAuthenticated: boolean; user: User }) => {
     setIsAuthenticated(isAuthenticated);
-    setUserName(name);
+    setUser(user);
   };
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        userName,
+        user,
         setAuth,
       }}
     >

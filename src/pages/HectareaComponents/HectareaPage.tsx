@@ -6,6 +6,8 @@ import { HectareaCardSkeleton } from './HectareaCardSkeleton';
 import { HectareaCard } from './HectareaCard';
 import { Button } from '@/components/ui/button';
 import { ModalCrearHectarea } from './ModalCrearHectarea';
+import { useAuth } from '@/hooks/use-auth';
+import { ROLES } from '@/lib/constants';
 
 export interface Hectarea {
   idHectarea: number;
@@ -18,20 +20,22 @@ export const HectareaPage = () => {
   const [hectareas, setHectareas] = useState<Hectarea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { user } = useAuth();
 
   const handleToggleModal = (newState: boolean) => {
     setIsModalVisible(newState);
-  }
+  };
 
   const fetchHectareas = () => {
-    httpClient.get('/hectareas/all')
-    .then(resp => setHectareas(resp.data.data))
-    .finally(() => setIsLoading(false));
-  }
+    httpClient
+      .get('/hectareas/all')
+      .then((resp) => setHectareas(resp.data.data))
+      .finally(() => setIsLoading(false));
+  };
 
   useEffect(() => {
     fetchHectareas();
-  }, [])
+  }, []);
 
   return (
     <div className='w-full h-[90%]'>
@@ -49,28 +53,30 @@ export const HectareaPage = () => {
               Buscar
             </button>
           </div>
-          <div>
-          <Button onClick={() => handleToggleModal(true)} className='h-11 w-40 bg-[#98a75f] text-white hover:bg-[#9dac65] focus:outline-none focus:ring-1 focus:ring-[#aebe6f] focus:ring-offset-1 flex items-center justify-center gap-1'>
-            <BadgePlus size={18} /> Crear Hectarea
-          </Button>
-          </div>
+          {user.role === ROLES.ADMIN && (
+            <div>
+              <Button
+                onClick={() => handleToggleModal(true)}
+                className='h-11 w-40 bg-[#98a75f] text-white hover:bg-[#9dac65] focus:outline-none focus:ring-1 focus:ring-[#aebe6f] focus:ring-offset-1 flex items-center justify-center gap-1'
+              >
+                <BadgePlus size={18} /> Crear Hectarea
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-      <div className='h-full w-full bg-white p-5 grid grid-cols-4 '>
-        {
-          isLoading && (
-            Array.from({ length: 5 }).map((_, index) => (
-              <HectareaCardSkeleton key={index} />
-            ))
-          )
-        }
-        {
-          hectareas.map(hectarea => (
-            <HectareaCard key={hectarea.idHectarea} {...hectarea} />
-          ))
-        }
+      <div className='h-full w-full bg-white p-5 grid grid-cols-4 items-start'>
+        {isLoading &&
+          Array.from({ length: 5 }).map((_, index) => <HectareaCardSkeleton key={index} />)}
+        {hectareas.map((hectarea) => (
+          <HectareaCard key={hectarea.idHectarea} {...hectarea} />
+        ))}
       </div>
-      <ModalCrearHectarea isVisible={isModalVisible} onOpenChange={handleToggleModal} onCreate={fetchHectareas} />
+      <ModalCrearHectarea
+        isVisible={isModalVisible}
+        onOpenChange={handleToggleModal}
+        onCreate={fetchHectareas}
+      />
     </div>
   );
 };

@@ -161,7 +161,7 @@ export const DetalleHectarea = () => {
         >
           <DialogTrigger asChild>
             <Button
-              // disabled={hectarea?.status !== 'COSECHABLE'}
+              // disabled={hectarea?.status !== 'COSECHANDO'}
               className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'
             >
               <Box className='mr-2 h-4 w-4' />

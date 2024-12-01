@@ -56,15 +56,18 @@ export const LoginPage = () => {
       return;
     }
 
-    setAuth({
-      isAuthenticated: true,
-      name: response.data?.user.name as string,
-    });
-
     const auth = {
       token: response.data?.token,
-      userName: response.data?.user.name,
+      user: {
+        userName: response.data?.user.name as string,
+        role: response.data?.user.role as string
+      }
     };
+    setAuth({
+      isAuthenticated: true,
+      user: auth.user,
+    });
+
     localStorage.setItem('auth', JSON.stringify(auth));
     navigate('/dashboard/inicio', {
       replace: true,

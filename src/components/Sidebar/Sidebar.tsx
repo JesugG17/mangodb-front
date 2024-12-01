@@ -17,6 +17,7 @@ import { Opcion } from '@/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@radix-ui/react-toast';
+import { User } from '@/context/AuthProvider';
 
 const icons = {
   home: Home,
@@ -32,7 +33,7 @@ export const DashboardSidebar: React.FC<Props> = ({ isOpen }) => {
   const [opciones, setOpciones] = useState<Opcion[]>([]);
   const [isLoadingOptions, setIsLoadingOptions] = useState(true);
   const navigate = useNavigate();
-  const { userName, setAuth } = useAuth();
+  const { user, setAuth } = useAuth();
   const { toast } = useToast();
 
   const getIcon = (icon: string) => {
@@ -43,7 +44,7 @@ export const DashboardSidebar: React.FC<Props> = ({ isOpen }) => {
   const handleLogout = () => {
     setAuth({
       isAuthenticated: false,
-      name: '',
+      user: {} as User,
     });
     localStorage.clear();
   };
@@ -63,7 +64,7 @@ export const DashboardSidebar: React.FC<Props> = ({ isOpen }) => {
     });
     setAuth({
       isAuthenticated: false,
-      name: '',
+      user: {} as User,
     });
     toast({
       title: 'SU SESIÓN HA EXPIRADO',
@@ -81,13 +82,13 @@ export const DashboardSidebar: React.FC<Props> = ({ isOpen }) => {
       <SidebarHeader className='flex items-center p-4'>
         <Avatar className='w-10 h-10 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:h-8'>
           <AvatarFallback className='bg-primary text-primary-foreground'>
-            {userName.charAt(0)}
+            {user.userName.charAt(0)}
           </AvatarFallback>
         </Avatar>
         {isOpen && (
           <div className='ml-3 overflow-hidden transition-all duration-300 ease-in-out group-data-[collapsible=icon]:w-0'>
             <h3 className='font-semibold text-lg leading-tight'>MangoDB</h3>
-            <p className='text-xs text-muted-foreground'>{userName}</p>
+            <p className='text-xs text-muted-foreground'>{user.userName}</p>
           </div>
         )}
       </SidebarHeader>

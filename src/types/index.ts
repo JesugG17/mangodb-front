@@ -12,6 +12,7 @@ export interface AuthResponse {
     token: string;
     user: {
       name: string;
+      role: string;
     };
   };
 }
