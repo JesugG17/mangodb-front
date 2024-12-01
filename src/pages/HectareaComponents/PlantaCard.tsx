@@ -4,11 +4,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/hooks/use-toast';
 import { httpClient } from '@/lib/api';
-import { Planta, SensorResponse } from '@/types';
+import { Planta, SensorCrecimiento, SensorProducto, SensorResponse } from '@/types';
 import { Sprout } from 'lucide-react';
 import { FC, useState } from 'react';
 
 export const PlantaCard: FC<Props> = ({ planta }) => {
+  const [plantaState, setPlantaState] = useState(planta);
   const [popOverCrecimiento, setPopOverCrecimiento] = useState(false);
   const [popOverProducto, setPopOverProducto] = useState(false);
   const { toast } = useToast();
@@ -34,6 +35,14 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
     const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-producto', {
       plantaId,
     });
+
+    if (res.data.isValid) {
+      setPlantaState(prevState => ({
+        ...prevState,
+        sensorProducto: {} as SensorProducto
+      }))
+    }
+
     mensajeSensor(res.data);
   };
 
@@ -41,6 +50,14 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
     const res = await httpClient.post<SensorResponse>('/plantas/asignar-sensor-crecimiento', {
       plantaId,
     });
+
+    if (res.data.isValid) {
+      setPlantaState(prevState => ({
+        ...prevState,
+        sensorCrecimiento: {} as SensorCrecimiento
+      }))
+    }
+
     mensajeSensor(res.data);
   };
 
@@ -62,14 +79,14 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
             </PopoverTrigger>
             <PopoverContent>
               <div className='bg-white rounded p-2'>
-                <strong>Esta planta no es apta para colocar sensor de crecimiento</strong>
+                <strong>Esta planta aun no es apta para colocar sensor de crecimiento</strong>
               </div>
             </PopoverContent>
           </Popover>
         ) : (
           <Button
             onClick={() => asignarSensorCrecimiento(planta.idPlanta)}
-            className={`w-full mb-2 ${planta.sensorCrecimiento ? 'bg-green-500' : 'bg-red-400'} text-white`}
+            className={`w-full mb-2 ${plantaState.sensorCrecimiento ? 'bg-green-600 pointer-events-none' : 'bg-red-400'} text-white`}
           >
             Sensor Crecimiento
           </Button>
@@ -88,14 +105,14 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
             </PopoverTrigger>
             <PopoverContent>
               <div className='bg-white rounded p-2'>
-                <strong>Esta planta no es apta para colocar sensor de producto</strong>
+                <strong>Esta planta aun no es apta para colocar sensor de producto</strong>
               </div>
             </PopoverContent>
           </Popover>
         ) : (
           <Button
             onClick={() => asignarSensorProducto(planta.idPlanta)}
-            className={`w-full mb-2 ${planta.sensorProducto ? 'bg-green-500' : 'bg-red-400'} text-white`}
+            className={`w-full mb-2 ${plantaState.sensorProducto ? 'bg-green-600 pointer-events-none' : 'bg-red-400'} text-white`}
           >
             Sensor Producto
           </Button>

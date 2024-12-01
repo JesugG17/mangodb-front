@@ -160,7 +160,10 @@ export const DetalleHectarea = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'>
+            <Button
+              // disabled={hectarea?.status !== 'COSECHABLE'}
+              className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'
+            >
               <Box className='mr-2 h-4 w-4' />
               Registrar Caja
             </Button>
