@@ -235,7 +235,7 @@ export const DetalleHectarea = () => {
             </Button>
             <div className='mt-4 p-4 bg-gray-100 rounded-md'>
               <h3 className='font-bold mb-2'>Etiqueta:</h3>
-              <p>Hectárea: {cajaRegistrada.hectarea}</p>
+              <p>CajaID: {cajaRegistrada.idCaja}</p>
               <p>Kilos: {cajaRegistrada.kg}</p>
               <p>Planta: {cajaRegistrada.planta}</p>
               <p>Fecha de registro: {new Date(cajaRegistrada.fecha).toLocaleDateString()}</p>
