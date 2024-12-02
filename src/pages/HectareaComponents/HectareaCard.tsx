@@ -3,6 +3,9 @@ import { Hectarea as HectareaType } from './HectareaPage';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { ROLES } from '@/lib/constants';
+import { httpClient } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@radix-ui/react-toast';
 
 const getBackgroundColor = (status: HectareaType['status']): string => {
   switch (status) {
@@ -43,6 +46,19 @@ const getBorderColor = (status: HectareaType['status']): string => {
   }
 };
 
+const getHoverStyles = (status: HectareaType['status']): string => {
+  switch (status) {
+    case 'NO COSECHABLE':
+      return 'hover:bg-red-700';
+    case 'COSECHABLE':
+      return 'hover:bg-green-700';
+    case 'COSECHANDO':
+      return 'hover:bg-yellow-700';
+    case 'COSECHADA':
+      return 'hover:bg-gray-700';
+  }
+};
+
 export const HectareaCard: React.FC<HectareaType> = ({
   idHectarea,
   comunidad,
@@ -51,14 +67,40 @@ export const HectareaCard: React.FC<HectareaType> = ({
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const isAutorizarButtonEnabled = status === 'COSECHABLE';
+
+  const fetchAutorizarHectarea = () => {
+    httpClient
+      .put(`/hectareas/autorizar/${idHectarea}`)
+      .then((res) =>{
+        if (!res.data.isValid) {
+          toast({
+            title: 'ERROR AL AUTORIZAR LA HECTÁREA',
+            description: res.data.message,
+            action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+          });
+          return;
+        }
+
+        toast({
+          title: 'HECTÁREA AUTORIZADA CON ÉXITO',
+          description: res.data.message,
+          action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+        });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      })
+  };
 
   return (
     <div
       className={`${getBackgroundColor(
         status
-      )} border rounded-lg p-4 m-4 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer  flex flex-col justify-items-start`}
+      )} border rounded-lg p-4 m-4 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col justify-items-start`}
     >
       <div>
         <h3 className='text-lg font-semibold text-[#3d3d3d] mb-2'>Hectárea {idHectarea}</h3>
@@ -75,25 +117,29 @@ export const HectareaCard: React.FC<HectareaType> = ({
       <div className='flex flex-col gap-3'>
         <button
           onClick={() => navigate(`/dashboard/hectarea/${idHectarea}`)}
-          className={`bg-transparent h-8 rounded border mt-4 p-1 ${getBorderColor(status)} hover:bg-white hover:border-black stransition-all duration-200  flex-1`}
+          className={`bg-transparent h-8 rounded border mt-4 p-1 ${getBorderColor(status)} ${getStatusColor(status)} ${getHoverStyles(status)} hover:text-white transition-all duration-200 flex-1`}
         >
-          <span className={`text-sm font-semibold ${getStatusColor(status)}`}>Ver detalle</span>
+          <span className={`text-sm font-semibold`}>Ver detalle</span>
         </button>
         {user.role === ROLES.ADMIN && (
           <button
             onClick={() => {
-              // e.stopPropagation();
-              console.log('click');
+              {fetchAutorizarHectarea()}
             }}
             disabled={!isAutorizarButtonEnabled}
             className={`bg-transparent h-8 rounded border p-1 ${getBorderColor(status)} ${
-              isAutorizarButtonEnabled ? '' : 'disabled pointer-events-none'
-            } transition-all duration-200 hover:bg-white hover:text-black hover:border-black flex-1`}
+              isAutorizarButtonEnabled 
+                ? `${getStatusColor(status)} ${getHoverStyles(status)} hover:text-white` 
+                : 'text-gray-400'
+            } transition-all duration-200 flex-1 ${
+              !isAutorizarButtonEnabled && 'opacity-50 cursor-not-allowed'
+            }`}
           >
-            <span className={`text-sm font-semibold ${getStatusColor(status)}`}>Autorizar</span>
+            <span className="text-sm font-semibold">Autorizar</span>
           </button>
         )}
       </div>
     </div>
   );
 };
+
