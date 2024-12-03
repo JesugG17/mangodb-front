@@ -263,6 +263,7 @@ export const UserCatalago = () => {
                       <SelectItem value='1'>Administrador</SelectItem>
                       <SelectItem value='2'>Gerente de Almacen</SelectItem>
                       <SelectItem value='3'>Lider de Recolección</SelectItem>
+                      <SelectItem value='4'>Ventas</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
