@@ -96,6 +96,31 @@ export const HectareaCard: React.FC<HectareaType> = ({
       })
   };
 
+  const fetchFinalizarCosecha = () => {
+    httpClient
+      .put(`/hectareas/finalizar-cosecha/${idHectarea}`)
+      .then((res) =>{
+        if (!res.data.isValid) {
+          toast({
+            title: 'ERROR AL FINALIZAR LA COSECHA',
+            description: res.data.message,
+            action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+          });
+          return;
+        }
+
+        toast({
+          title: 'COSECHA FINALIZADA CON ÉXITO',
+          description: res.data.message,
+          action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+        });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      })
+  };
+
   return (
     <div
       className={`${getBackgroundColor(
@@ -121,6 +146,18 @@ export const HectareaCard: React.FC<HectareaType> = ({
         >
           <span className={`text-sm font-semibold`}>Ver detalle</span>
         </button>
+        
+        {(user.role === ROLES.LIDER_RECOLECCION && status === 'COSECHANDO') && (
+          <button
+            onClick={() => {
+              {fetchFinalizarCosecha()}
+            }}
+            className={`bg-transparent h-8 rounded border p-1 border-yellow-700 text-yellow-700 hover:bg-yellow-700 hover:text-white transition-all duration-200 flex-1`}
+          >
+            <span className="text-sm font-semibold">Finalizar Cosecha</span>
+          </button>
+        )}
+
         {user.role === ROLES.ADMIN && (
           <button
             onClick={() => {
