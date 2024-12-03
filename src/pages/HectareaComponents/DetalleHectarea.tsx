@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Sprout, Box, ArrowBigLeftDash } from 'lucide-react';
+import { Sprout, Box } from 'lucide-react';
 import { FirstLetterGreen } from '@/components/FirstLetterGreen/FirstLetterGreen';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -134,12 +134,12 @@ export const DetalleHectarea = () => {
     <div className='w-full h-[93%]'>
       <div className='flex p-2 items-center justify-between'>
         <div className='flex p-3 items-center'>
-          <ArrowBigLeftDash
+          {/* <ArrowBigLeftDash
             size={40}
             className='cursor-pointer'
             color='#98a75f'
             onClick={() => navigate('/dashboard/hectarea')}
-          />
+          /> */}
           <div className='flex items-center ml-5'>
             <Sprout size={40} color='#98a75f' />
             <FirstLetterGreen label='Detalle de Hectárea' style={{ fontSize: 35 }} />
@@ -161,7 +161,7 @@ export const DetalleHectarea = () => {
         >
           <DialogTrigger asChild>
             <Button
-              // disabled={hectarea?.status !== 'COSECHANDO'}
+              disabled={hectarea?.status !== 'COSECHADA'}
               className='bg-[#98a75f] hover:bg-[#7a8a3b] text-white flex gap-1'
             >
               <Box className='mr-2 h-4 w-4' />
@@ -235,7 +235,6 @@ export const DetalleHectarea = () => {
             </Button>
             <div className='mt-4 p-4 bg-gray-100 rounded-md'>
               <h3 className='font-bold mb-2'>Etiqueta:</h3>
-              <p>CajaID: {cajaRegistrada.idCaja}</p>
               <p>Caja: {cajaRegistrada.idCaja}</p>
               <p>Hectárea: {cajaRegistrada.hectarea}</p>
               <p>Kilos: {cajaRegistrada.kg}</p>
