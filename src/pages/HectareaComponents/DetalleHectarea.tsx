@@ -212,6 +212,7 @@ export const DetalleHectarea = () => {
                   Calidad
                 </Label>
                 <Select
+                  value={cajaRegistro.tipo}
                   onValueChange={(value: string) =>
                     setCajaRegistro({ ...cajaRegistro, tipo: value })
                   }
