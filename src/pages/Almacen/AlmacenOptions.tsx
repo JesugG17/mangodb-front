@@ -16,6 +16,7 @@ import { httpClient } from '@/lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Spinner } from '@/components/Spinner';
+import { ToastAction } from '@radix-ui/react-toast';
 
 interface EntradaCaja {
   idCaja: number;
@@ -29,17 +30,22 @@ export interface Estante {
   estante: number;
   disponibles: number;
   lleno: boolean;
-} 
+}
 
 export interface Almacen {
   id: number;
   tipo: string;
 }
 
+export interface Caja {
+  idCaja: number;
+}
+
 export const AlmacenOptions = () => {
-  const [formState, setFormState] = useState({
-    idCaja: ''
+  const [formState, setFormState] = useState<Caja>({
+    idCaja: 0
   });
+
   const [cajaEntrada, setCajaEntrada] = useState<EntradaCaja>({} as EntradaCaja);
   const [estantes, setEstantes] = useState<Estante[]>([])
   const [almacen, setAlmacen] = useState<Almacen>({} as Almacen)
@@ -49,7 +55,16 @@ export const AlmacenOptions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEstanteLoading, setIsEstanteLoading] = useState(false);
 
-  const handleAsignarEspacio = async() => {
+  const handleAsignarEspacio = async () => {
+
+    if (formState.idCaja === 0) {
+      return toast({
+        title: 'ERROR AL ASIGNAR ESPACIO',
+        description: 'El campo ID Caja es requerido',
+        action: <ToastAction altText='Goto schedule to undo'>Cerrar</ToastAction>,
+      });
+    }
+
     const { data } = await httpClient.post('/almacenes/asignar-espacio', {
       idCaja: formState.idCaja,
       idAlmacen: almacen.id
@@ -65,7 +80,7 @@ export const AlmacenOptions = () => {
     await fetchAlmacen();
   }
 
-  const fetchAlmacen = async() => {
+  const fetchAlmacen = async () => {
     setIsEstanteLoading(true)
     const { data } = await httpClient.get(`/almacenes/${id}`);
 
@@ -89,7 +104,7 @@ export const AlmacenOptions = () => {
   if (isLoading) {
     return (
       <div className='w-full h-screen flex justify-center items-center'>
-       <Spinner />
+        <Spinner />
       </div>
     );
   }
@@ -129,13 +144,13 @@ export const AlmacenOptions = () => {
                     </Label>
                     <Input
                       id='kilos'
-                      type='number'
+                      type='text'
                       value={formState.idCaja}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (/^\d*$/.test(value)) {
                           setFormState({
-                            idCaja: value
+                            idCaja: Number(value)
                           });
                         }
                       }}
@@ -157,6 +172,7 @@ export const AlmacenOptions = () => {
                   <p><strong>Division:</strong> {cajaEntrada.division || 'No asignado'}</p>
                   <p><strong>Particion:</strong> {cajaEntrada.particion || 'No asignado'}</p>
                   <p><strong>Fecha de registro:</strong> {cajaEntrada.fechaRegistro ? cajaEntrada.fechaRegistro.split('T')[0] : 'No asignado'}</p>
+                  <p className='text-right underline cursor-pointer'>Imprimir</p>
                 </div>
               </DialogContent>
             </Dialog>
@@ -165,8 +181,8 @@ export const AlmacenOptions = () => {
         <div className='mt-10 flex justify-center'>
           {
             isEstanteLoading
-            ? 'Cargando...'
-            : <EstantesPage estantes={estantes} almacen={almacen} />
+              ? 'Cargando...'
+              : <EstantesPage estantes={estantes} almacen={almacen} />
           }
         </div>
       </div>

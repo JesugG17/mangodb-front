@@ -42,8 +42,8 @@ export const HectareaPage = () => {
       <div className='flex p-3 items-center'>
         <Sprout size={40} color='#98a75f' />
         <FirstLetterGreen label='Hectáreas' style={{ fontSize: 35 }} />
-        <div className='flex justify-between w-full'>
-          <div className='relative flex w-full ml-5'>
+        <div className='flex justify-end w-full'>
+          {/* <div className='relative flex w-full ml-5'>
             <input
               type='text'
               placeholder='ID de hectarea'
@@ -52,7 +52,7 @@ export const HectareaPage = () => {
             <button className='h-11 rounded-r-md bg-[#98a75f] px-4 py-2 text-white hover:bg-[#9dac65] focus:outline-none focus:ring-1 focus:ring-[#aebe6f] focus:ring-offset-1'>
               Buscar
             </button>
-          </div>
+          </div> */}
           {user.role === ROLES.ADMIN && (
             <div>
               <Button

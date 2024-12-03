@@ -236,10 +236,13 @@ export const DetalleHectarea = () => {
             <div className='mt-4 p-4 bg-gray-100 rounded-md'>
               <h3 className='font-bold mb-2'>Etiqueta:</h3>
               <p>CajaID: {cajaRegistrada.idCaja}</p>
+              <p>Caja: {cajaRegistrada.idCaja}</p>
+              <p>Hectárea: {cajaRegistrada.hectarea}</p>
               <p>Kilos: {cajaRegistrada.kg}</p>
               <p>Planta: {cajaRegistrada.planta}</p>
               <p>Fecha de registro: {new Date(cajaRegistrada.fecha).toLocaleDateString()}</p>
               <p>Calidad: {cajaRegistrada.tipo}</p>
+              <p className='text-right underline cursor-pointer'>Imprimir</p>
             </div>
           </DialogContent>
         </Dialog>

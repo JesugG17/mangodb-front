@@ -91,9 +91,9 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
             ) : (
               <Button
                 onClick={() => asignarSensorCrecimiento(planta.idPlanta)}
-                className={`w-full mb-2 ${
-                  plantaState.sensorCrecimiento ? 'bg-[#98a75f] pointer-events-none' : 'bg-red-400'
-                } text-white`}
+                className={`w-full mb-2 
+                  ${plantaState.sensorCrecimiento ? 'bg-[#98a75f] pointer-events-none' : 'bg-[#A8A8A8]'} 
+                  ${!plantaState.sensorCrecimiento && 'hover:bg-[#98a75f]' } text-white`}
               >
                 Sensor Crecimiento
               </Button>
@@ -119,9 +119,9 @@ export const PlantaCard: FC<Props> = ({ planta }) => {
             ) : (
               <Button
                 onClick={() => asignarSensorProducto(planta.idPlanta)}
-                className={`w-full mb-2 ${
-                  plantaState.sensorProducto ? 'bg-[#98a75f] pointer-events-none' : 'bg-red-400'
-                } text-white`}
+                className={`w-full mb-2 
+                  ${plantaState.sensorProducto ? 'bg-[#98a75f] pointer-events-none' : 'bg-[#A8A8A8]'}
+                  ${!plantaState.sensorProducto && 'hover:bg-[#98a75f]' } text-white`}
               >
                 Sensor Producto
               </Button>
