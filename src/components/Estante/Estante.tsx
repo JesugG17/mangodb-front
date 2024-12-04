@@ -97,7 +97,7 @@ export const Estante: React.FC<Props> = ({ estante, almacen }) => {
                                       <Package size={20} />
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <strong>{caja}</strong>
+                                      <strong>Caja {caja}</strong>
                                     </TooltipContent>
                                   </Tooltip>
                                 )

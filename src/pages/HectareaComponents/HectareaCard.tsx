@@ -92,7 +92,7 @@ export const HectareaCard: React.FC<HectareaType> = ({
 
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1500);
       })
   };
 
@@ -117,7 +117,7 @@ export const HectareaCard: React.FC<HectareaType> = ({
 
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1500);
       })
   };
 
